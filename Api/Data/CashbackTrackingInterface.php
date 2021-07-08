@@ -9,9 +9,9 @@ interface CashbackTrackingInterface extends ExtensibleDataInterface
 {
     const TBL_NAME = 'tada_cashback_tracking';
     const ENTITY_ID = 'entity_id';
-    const ATTRIBUTE_ONE = 'attribute_one';
-    const ATTRIBUTE_TWO = 'attribute_two';
-    const ATTRIBUTE_THREE = 'attribute_three';
+    const ORDER_ID = 'order_id';
+    const PARTNER = 'partner';
+    const PARTNER_PARAMETER = 'partner_parameter';
 
     /**
      * @return int
@@ -25,37 +25,37 @@ interface CashbackTrackingInterface extends ExtensibleDataInterface
     public function setEntityId($value);
 
     /**
-     * @return string
-     */
-    public function getAttributeOne();
-
-    /**
-     * @param string $value
-     * @return $this
-     */
-    public function setAttributeOne(string $value);
-
-    /**
-     * @return float
-     */
-    public function getAttributeTwo();
-
-    /**
-     * @param float $value
-     * @return $this
-     */
-    public function setAttributeTwo(float $value);
-
-    /**
      * @return int
      */
-    public function getAttributeThree();
+    public function getOrderId();
 
     /**
-     * @param int $value
+     * @param int $orderId
      * @return $this
      */
-    public function setAttributeThree(int $value);
+    public function setOrderId(int $orderId);
+
+    /**
+     * @return string
+     */
+    public function getPartner():string;
+
+    /**
+     * @param string $partner
+     * @return $this
+     */
+    public function setPartner(string $partner);
+
+    /**
+     * @return string
+     */
+    public function getPartnerParameter():string;
+
+    /**
+     * @param string $partnerParameter
+     * @return $this
+     */
+    public function setPartnerParameter(string $partnerParameter);
 
     /**
      * Retrieve existing extension attributes object or create a new one.

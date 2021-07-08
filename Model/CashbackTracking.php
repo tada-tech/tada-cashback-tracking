@@ -43,55 +43,33 @@ class CashbackTracking extends AbstractExtensibleModel implements CashbackTracki
         $this->setData(self::ENTITY_ID, $value);
     }
 
-    /**
-     * @return mixed|string|null
-     */
-    public function getAttributeOne()
+    public function getOrderId()
     {
-        return $this->getData(self::ATTRIBUTE_ONE);
+        return $this->getData(self::ORDER_ID);
     }
 
-    /**
-     * @param string $value
-     * @return CashbackTracking|void
-     */
-    public function setAttributeOne(string $value)
+    public function setOrderId(int $orderId)
     {
-        $this->setData(self::ATTRIBUTE_ONE, $value);
+        $this->setData(self::ORDER_ID, $orderId);
+    }
+    public function getPartner(): string
+    {
+        return $this->getData(self::PARTNER);
     }
 
-    /**
-     * @return float|mixed|null
-     */
-    public function getAttributeTwo()
+    public function setPartner(string $partner)
     {
-        return $this->getData(self::ATTRIBUTE_TWO);
+        $this->setData(self::PARTNER, $partner);
     }
 
-    /**
-     * @param float $value
-     * @return CashbackTracking|void
-     */
-    public function setAttributeTwo(float $value)
+    public function getPartnerParameter(): string
     {
-        $this->setData(self::ATTRIBUTE_TWO, $value);
+        return $this->getData(self::PARTNER_PARAMETER);
     }
 
-    /**
-     * @return int|mixed|null
-     */
-    public function getAttributeThree()
+    public function setPartnerParameter(string $partnerParameter)
     {
-        return $this->getData(self::ATTRIBUTE_THREE);
-    }
-
-    /**
-     * @param int $value
-     * @return CashbackTracking|void
-     */
-    public function setAttributeThree(int $value)
-    {
-        $this->setData(self::ATTRIBUTE_THREE, $value);
+        $this->setData(self::PARTNER_PARAMETER, $partnerParameter);
     }
 
     /**

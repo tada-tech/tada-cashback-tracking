@@ -19,6 +19,11 @@ class CashbackTrackingRepository implements CashbackTrackingRepositoryInterface
     private $registry = [];
 
     /**
+     * @var \Tada\CashbackTracking\Model\CashbackTracking[]
+     */
+    private $orderIdRegistry = [];
+
+    /**
      * @var ResourceModel\CashbackTracking
      */
     private $resourceModel;
@@ -146,6 +151,35 @@ class CashbackTrackingRepository implements CashbackTrackingRepositoryInterface
     }
 
     /**
+     * @param int $orderId
+     * @param bool $forceReload
+     * @return CashbackTrackingInterface|CashbackTracking
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getByOrderId(int $orderId, bool $forceReload = false)
+    {
+        if (isset($this->orderIdRegistry[$orderId]) && !$forceReload) {
+            return $this->orderIdRegistry[$orderId];
+        }
+
+        $model = $this->modelFactory->create();
+
+        $entityId = $this->resourceModel->getIdByOrderId($orderId);
+
+        if (!$entityId) {
+            throw new NoSuchEntityException(
+                __("The entity_id was requested doesn't exist")
+            );
+        }
+
+        $this->resourceModel->load($model, $entityId);
+        $this->orderIdRegistry[$orderId] = $model;
+
+        return $model;
+    }
+
+    /**
      * @param CashbackTrackingInterface $object
      * @return CashbackTrackingInterface
      * @throws \Exception
@@ -154,6 +188,7 @@ class CashbackTrackingRepository implements CashbackTrackingRepositoryInterface
     {
         $entityId = $object->getEntityId();
         unset($this->registry[$entityId]);
+        unset($this->orderIdRegistry[$entityId]);
         $this->resourceModel->delete($object);
         return $object;
     }

@@ -8,4 +8,8 @@
     <preference for="Tada\CashbackTracking\Api\Data\CashbackTrackingSearchResultInterface"
                 type="Magento\Framework\Api\SearchResultsInterface" />
 
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="load_partner_tracking_after_get_order"
+                type="Tada\CashbackTracking\Model\Plugin\OrderRepository\GetPartnerTrackingPlugin"/>
+    </type>
 </config>

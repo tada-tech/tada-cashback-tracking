@@ -26,6 +26,15 @@ interface CashbackTrackingRepositoryInterface
     public function get(int $entityId, bool $forceReload = false);
 
     /**
+     * @param int $orderId
+     * @param bool $forceReload
+     * @return CashbackTrackingInterface|CashbackTracking
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getByOrderId(int $orderId, bool $forceReload = false);
+
+    /**
      * @param SearchCriteriaInterface $searchCriteria
      * @return CashbackTrackingSearchResultInterface
      */

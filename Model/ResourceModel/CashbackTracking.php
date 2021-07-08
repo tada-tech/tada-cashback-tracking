@@ -19,4 +19,21 @@ class CashbackTracking extends AbstractDb
             CashbackTrackingInterface::ENTITY_ID
         );
     }
+
+    /**
+     * @param int $orderId
+     * @return int|false
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getIdByOrderId(int $orderId)
+    {
+        $connection = $this->getConnection();
+        $select = $connection->select()
+            ->from($this->getMainTable(), CashbackTrackingInterface::ENTITY_ID)
+            ->where('order_id = :order_id');
+
+        $bind = [':order_id' => $orderId];
+
+        return $connection->fetchOne($select, $bind);
+    }
 }

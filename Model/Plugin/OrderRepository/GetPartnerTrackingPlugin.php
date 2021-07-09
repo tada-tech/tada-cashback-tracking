@@ -44,7 +44,7 @@ class GetPartnerTrackingPlugin
     protected function getPartnerTracking(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         try {
-            $partnerTracking = $this->cashbackTrackingRepository->getByOrderId($order->getEntityId());
+            $partnerTracking = $this->cashbackTrackingRepository->getByOrderId((int) $order->getEntityId());
         } catch (NoSuchEntityException $e) {
             return $order;
         }

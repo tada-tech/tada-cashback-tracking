@@ -54,7 +54,7 @@ class CashbackTrackingRepositoryTest extends TestCase
     /**
      * @var CashbackTrackingRepository
      */
-    protected $CashbackTrackingRepository;
+    protected $cashbackTrackingRepository;
 
     /**
      * @var ObjectManager
@@ -73,7 +73,7 @@ class CashbackTrackingRepositoryTest extends TestCase
 
         $this->objectManager = new ObjectManager($this);
 
-        $this->CashbackTrackingRepository = new CashbackTrackingRepository(
+        $this->cashbackTrackingRepository = new CashbackTrackingRepository(
             $this->resourceModel,
             $this->modelFactory,
             $this->collectionFactory,
@@ -96,7 +96,7 @@ class CashbackTrackingRepositoryTest extends TestCase
             ->with($object)
             ->andReturnSelf();
 
-        $actualResult = $this->CashbackTrackingRepository->save($object);
+        $actualResult = $this->cashbackTrackingRepository->save($object);
         $this->assertEquals($object, $actualResult);
     }
 
@@ -112,7 +112,7 @@ class CashbackTrackingRepositoryTest extends TestCase
             ->andReturn(1);
 
         $this->expectExceptionMessage('Unable to save $object with ID 1. Error: ');
-        $this->CashbackTrackingRepository->save($object);
+        $this->cashbackTrackingRepository->save($object);
     }
 
     public function testSaveWithExceptionAndNotObject()
@@ -128,7 +128,7 @@ class CashbackTrackingRepositoryTest extends TestCase
 
         $this->expectExceptionMessage('Unable to save new $object. Error: ');
 
-        $this->CashbackTrackingRepository->save($object);
+        $this->cashbackTrackingRepository->save($object);
     }
 
     public function testGet()
@@ -147,7 +147,7 @@ class CashbackTrackingRepositoryTest extends TestCase
         $model->shouldReceive('getEntityId')
             ->andReturn($entityId);
 
-        $actualResult = $this->CashbackTrackingRepository->get($entityId);
+        $actualResult = $this->cashbackTrackingRepository->get($entityId);
         $this->assertEquals($model, $actualResult);
     }
 
@@ -169,7 +169,7 @@ class CashbackTrackingRepositoryTest extends TestCase
 
         $this->expectException(NoSuchEntityException::class);
         $this->expectExceptionMessage("No such entity with entityId = ${entityId}");
-        $actualResult = $this->CashbackTrackingRepository->get($entityId);
+        $actualResult = $this->cashbackTrackingRepository->get($entityId);
     }
 
     public function testDelete()
@@ -181,7 +181,7 @@ class CashbackTrackingRepositoryTest extends TestCase
             ->shouldReceive('delete')
             ->with($object)
             ->andReturnSelf();
-        $result = $this->CashbackTrackingRepository->delete($object);
+        $result = $this->cashbackTrackingRepository->delete($object);
         $this->assertInstanceOf(CashbackTrackingInterface::class, $result);
     }
 
@@ -230,7 +230,49 @@ class CashbackTrackingRepositoryTest extends TestCase
             ->with(3)
             ->andReturnSelf();
 
-        $actualResult = $this->CashbackTrackingRepository->getList($searchCriteria);
+        $actualResult = $this->cashbackTrackingRepository->getList($searchCriteria);
         $this->assertEquals($searchResults, $actualResult);
+    }
+
+    public function testGetByOrderId()
+    {
+        $orderId = 2;
+        $model = Mockery::mock(\Tada\CashbackTracking\Model\CashbackTracking::class);
+        $this->modelFactory
+            ->shouldReceive('create')
+            ->andReturn($model);
+
+        $this->resourceModel
+            ->shouldReceive('getIdByOrderId')
+            ->with($orderId)
+            ->andReturn(1);
+
+        $this->resourceModel
+            ->shouldReceive('load')
+            ->with($model, 1)
+            ->andReturnSelf();
+
+        $actualResult = $this->cashbackTrackingRepository->getByOrderId($orderId);
+
+        $this->assertEquals($model, $actualResult);
+    }
+
+    public function testGetByOrderIdWithException()
+    {
+        $orderId = 2;
+
+        $model = Mockery::mock(\Tada\CashbackTracking\Model\CashbackTracking::class);
+        $this->modelFactory
+            ->shouldReceive('create')
+            ->andReturn($model);
+
+        $this->resourceModel
+            ->shouldReceive('getIdByOrderId')
+            ->with($orderId)
+            ->andReturn(false);
+
+        $this->expectException(NoSuchEntityException::class);
+        $this->expectExceptionMessage("The entity_id was requested doesn't exist");
+        $this->cashbackTrackingRepository->getByOrderId($orderId);
     }
 }

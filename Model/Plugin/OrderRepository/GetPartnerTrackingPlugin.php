@@ -4,6 +4,7 @@ namespace Tada\CashbackTracking\Model\Plugin\OrderRepository;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 
+
 class GetPartnerTrackingPlugin
 {
     /**
@@ -12,13 +13,21 @@ class GetPartnerTrackingPlugin
     protected $cashbackTrackingRepository;
 
     /**
+     * @var \Magento\Sales\Api\Data\OrderExtensionFactory
+     */
+    protected $orderExtensionFactory;
+
+    /**
      * GetPartnerTrackingPlugin constructor.
      * @param \Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface $cashbackTrackingRepository
+     * @param \Magento\Sales\Api\Data\OrderExtensionFactory $orderExtensionFactory
      */
     public function __construct(
-        \Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface $cashbackTrackingRepository
+        \Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface $cashbackTrackingRepository,
+        \Magento\Sales\Api\Data\OrderExtensionFactory $orderExtensionFactory
     ) {
         $this->cashbackTrackingRepository = $cashbackTrackingRepository;
+        $this->orderExtensionFactory = $orderExtensionFactory;
     }
 
     /**

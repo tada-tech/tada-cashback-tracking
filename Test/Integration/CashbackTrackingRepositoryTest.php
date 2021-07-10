@@ -33,9 +33,10 @@ class CashbackTrackingRepositoryTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->CashbackTrackingRepository = Bootstrap::getObjectManager()->get(CashbackTrackingRepositoryInterface::class);
-        $this->searchCriteriaBuilder = Bootstrap::getObjectManager()->get(SearchCriteriaBuilder::class);
-        $this->CashbackTrackingFactory = Bootstrap::getObjectManager()->get(CashbackTrackingFactory::class);
+        $objectManager = Bootstrap::getObjectManager();
+        $this->CashbackTrackingRepository = $objectManager->get(CashbackTrackingRepositoryInterface::class);
+        $this->searchCriteriaBuilder = $objectManager->get(SearchCriteriaBuilder::class);
+        $this->CashbackTrackingFactory = $objectManager->get(CashbackTrackingFactory::class);
     }
 
     /**

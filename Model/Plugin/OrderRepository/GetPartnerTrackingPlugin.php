@@ -4,7 +4,6 @@ namespace Tada\CashbackTracking\Model\Plugin\OrderRepository;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 
-
 class GetPartnerTrackingPlugin
 {
     /**

@@ -5,6 +5,7 @@ namespace Tada\CashbackTracking\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer as EventObserver;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface;
 use Tada\CashbackTracking\Api\Data\CashbackTrackingInterface;
 use Tada\CashbackTracking\Model\CashbackTracking;
@@ -48,21 +49,20 @@ class SaveCashbackTrackingEntityObserver implements ObserverInterface
     {
         /* @var $order \Magento\Sales\Model\Order */
         $order = $observer->getEvent()->getData('order');
-        $AdditionalInformation = $order->getPayment()->getAdditionalInformation();
+        $additionalInformation = $order->getPayment()->getAdditionalInformation();
 
-        //Save CashbackTrackingEntity
-        /** @var CashbackTracking $exitedCashbackEntity */
-        $exitedCashbackEntity = $this->cashbackTrackingRepository->getByOrderId((int)$order->getEntityId());
-
-        /** @var CashbackTracking $cashbackEntity */
-        $cashbackEntity = $exitedCashbackEntity ?: $this->cashbackTrackingFactory->create();
-
-        if (!$exitedCashbackEntity) {
+        try {
+            //Save CashbackTrackingEntity
+            /** @var CashbackTracking $exitedCashbackEntity */
+            $cashbackEntity = $this->cashbackTrackingRepository->getByOrderId((int)$order->getEntityId());
+        } catch (NoSuchEntityException $exception) {
+            /** @var CashbackTracking $cashbackEntity */
+            $cashbackEntity = $this->cashbackTrackingFactory->create();
             $cashbackEntity->setOrderId((int)$order->getEntityId());
         }
 
-        $cashbackEntity->setPartner($AdditionalInformation[CashbackTrackingInterface::PARTNER]);
-        $cashbackEntity->setPartnerParameter($AdditionalInformation[CashbackTrackingInterface::PARTNER_PARAMETER]);
+        $cashbackEntity->setPartner($additionalInformation[CashbackTrackingInterface::PARTNER]);
+        $cashbackEntity->setPartnerParameter($additionalInformation[CashbackTrackingInterface::PARTNER_PARAMETER]);
         $this->cashbackTrackingRepository->save($cashbackEntity);
 
         return $this;

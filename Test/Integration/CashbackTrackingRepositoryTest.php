@@ -3,22 +3,29 @@ declare(strict_types=1);
 
 namespace Tada\CashbackTracking\Test\Integration;
 
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\CartManagementInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\Quote;
 use PHPUnit\Framework\TestCase;
 use Magento\TestFramework\Helper\Bootstrap;
-use Tada\CashbackTracking\Api\Data\CashbackTrackingInterface;
 use Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\SearchCriteriaInterface;
-use Tada\CashbackTracking\Model\CashbackTracking;
 use Tada\CashbackTracking\Model\CashbackTrackingFactory;
+use Magento\Quote\Model\Quote\Address\Rate;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class CashbackTrackingRepositoryTest extends TestCase
 {
+
+    /**
+     * @var CartManagementInterface
+     */
+    private $cartManagement;
+
     /**
      * @var CashbackTrackingRepositoryInterface
      */
-    protected $CashbackTrackingRepository;
+    protected $cashbackTrackingRepository;
 
     /**
      * @var SearchCriteriaBuilder
@@ -30,101 +37,112 @@ class CashbackTrackingRepositoryTest extends TestCase
      */
     protected $CashbackTrackingFactory;
 
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    protected $objectManager;
+
+    /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
     protected function setUp()
     {
-        parent::setUp();
-        $objectManager = Bootstrap::getObjectManager();
-        $this->CashbackTrackingRepository = $objectManager->get(CashbackTrackingRepositoryInterface::class);
-        $this->searchCriteriaBuilder = $objectManager->get(SearchCriteriaBuilder::class);
-        $this->CashbackTrackingFactory = $objectManager->get(CashbackTrackingFactory::class);
+        $this->objectManager = Bootstrap::getObjectManager();
+        $this->cashbackTrackingRepository = $this->objectManager->get(CashbackTrackingRepositoryInterface::class);
+        $this->searchCriteriaBuilder = $this->objectManager->get(SearchCriteriaBuilder::class);
+        $this->cashbackTrackingFactory = $this->objectManager->get(CashbackTrackingFactory::class);
+        $this->cartManagement = $this->objectManager->create(CartManagementInterface::class);
+        $this->orderRepository = $this->objectManager->get(OrderRepositoryInterface::class);
     }
 
     /**
+     * @magentoDataFixture Magento/Sales/_files/quote.php
      * @magentoAppIsolation enabled
-     * @magentoDataFixture Tada_CashbackTracking::Test/_files/template_entities.php
      */
-    public function testGetList()
+    public function testGetCashbackTrackingEntity()
     {
-        $data = [
-            'attribute_one' => "Attribute Number One",
-            'attribute_two' => 10,
-            'attribute_three' => 24
-        ];
-        /** @var SearchCriteriaInterface $searchCriteria */
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CashbackTrackingInterface::ATTRIBUTE_ONE, $data['attribute_one'])
+        $quote = $this->_getQuote('test01');
+        $quote = $this->_prepareQuote($quote);
+
+        $orderId = $this->cartManagement->placeOrder($quote->getId());
+
+        $cashbackTrackingEntity = $this->cashbackTrackingRepository->getByOrderId((int) $orderId);
+
+        $this->assertEquals('shopback', $cashbackTrackingEntity->getPartner());
+        $this->assertEquals('happy10discount', $cashbackTrackingEntity->getPartnerParameter());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     * @magentoAppIsolation enabled
+     */
+    public function testGetOrderWithPartnerTrackingExtensionAttribute()
+    {
+        $quote = $this->_getQuote('test01');
+        $quote = $this->_prepareQuote($quote);
+
+        $orderId = $this->cartManagement->placeOrder($quote->getId());
+
+        $order = $this->orderRepository->get((int)$orderId);
+        $orderPartnerTracking = $order->getExtensionAttributes()->getPartnerTracking();
+        $cashbackTrackingEntity = $this->cashbackTrackingRepository->getByOrderId((int) $orderId);
+
+        $this->assertEquals($cashbackTrackingEntity, $orderPartnerTracking);
+    }
+
+    /**
+     * Gets quote by reserved order ID.
+     *
+     * @param string $reservedOrderId
+     * @return Quote
+     */
+    private function _getQuote(string $reservedOrderId): Quote
+    {
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = $this->objectManager->get(SearchCriteriaBuilder::class);
+        $searchCriteria = $searchCriteriaBuilder->addFilter('reserved_order_id', $reservedOrderId)
             ->create();
 
-        $results = $this->CashbackTrackingRepository->getList($searchCriteria)->getItems();
-        $firstItem = current($results);
-        unset($firstItem['entity_id']);
+        /** @var CartRepositoryInterface $quoteRepository */
+        $quoteRepository = $this->objectManager->get(CartRepositoryInterface::class);
+        $items = $quoteRepository->getList($searchCriteria)
+            ->getItems();
 
-        $this->assertEquals($data, $firstItem->getData());
+        return array_pop($items);
     }
 
     /**
-     * @magentoAppIsolation enabled
-     * @magentoDataFixture Tada_CashbackTracking::Test/_files/template_entities.php
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     * @return Quote
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function testDelete()
+    private function _prepareQuote(\Magento\Quote\Api\Data\CartInterface $quote): Quote
     {
-        /** @var SearchCriteriaInterface $searchCriteria */
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(CashbackTrackingInterface::ATTRIBUTE_ONE, "Attribute Number One")
-            ->create();
-
-        $results = $this->CashbackTrackingRepository->getList($searchCriteria)->getItems();
-        $firstItem = current($results);
-        $entityId = (int) $firstItem->getEntityId();
-
-        $this->CashbackTrackingRepository->delete($firstItem);
-
-        $this->expectException(NoSuchEntityException::class);
-        $this->expectExceptionMessage('No such entity with entityId = '. $entityId);
-        $this->CashbackTrackingRepository->get($entityId);
-    }
-
-    public function testSaveWithCreate()
-    {
-        $data = [
-            'attribute_one' => 'MAFL#R!FFAFa',
-            'attribute_two' => 53,
-            'attribute_three' => 443
+        $tracking = [
+            'partner' => 'shopback',
+            'partner_parameter' => 'happy10discount'
         ];
 
-        /** @var CashbackTracking $model */
-        $model =  $this->CashbackTrackingFactory->create();
-        $model->setData($data);
-        $newModel = $this->CashbackTrackingRepository->save($model);
+        $quote->getPayment()->setAdditionalInformation($tracking);
 
-        $entityId = $newModel->getEntityId();
-        $this->assertNotNull($entityId);
-    }
+        $shippingAddress = $quote->getShippingAddress();
 
-    /**
-     * @magentoAppIsolation enabled
-     */
-    public function testSaveWithUpdate()
-    {
-        $data = [
-            'attribute_one' => 'MAFL#R!FFAFa',
-            'attribute_two' => 53,
-            'attribute_three' => 443
-        ];
+        /** @var $rate Rate */
+        $rate = $this->objectManager->create(Rate::class);
+        $rate->setCode('flatrate_flatrate');
+        $rate->setPrice(5);
 
-        /** @var CashbackTracking $model */
-        $model =  $this->CashbackTrackingFactory->create();
-        $model->setData($data);
-        $newModel = $this->CashbackTrackingRepository->save($model);
-        $entityId = (int) $newModel->getEntityId();
+        $shippingAddress->setShippingMethod('flatrate_flatrate');
+        $shippingAddress->addShippingRate($rate);
 
-        $attributeOneNeedUpdate = ")%!*%!(f1f1";
-        /** @var CashbackTracking $model */
-        $model = $this->CashbackTrackingRepository->get($entityId);
-        $model->setAttributeOne($attributeOneNeedUpdate);
-        $updatedModel = $this->CashbackTrackingRepository->save($model);
+        $quote->setShippingAddress($shippingAddress);
+        $quote->setCheckoutMethod('guest');
+        $quoteRepository = $this->objectManager
+            ->get(\Magento\Quote\Api\CartRepositoryInterface::class);
+        $quoteRepository->save($quote);
 
-        $this->assertEquals($entityId, $updatedModel->getEntityId());
-        $this->assertEquals($attributeOneNeedUpdate, $updatedModel->getAttributeOne());
+        return $quote;
     }
 }

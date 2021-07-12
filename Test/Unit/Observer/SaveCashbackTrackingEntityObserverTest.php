@@ -17,12 +17,24 @@ use Magento\Sales\Model\Order;
 class SaveCashbackTrackingEntityObserverTest extends TestCase
 {
 
+    /**
+     * @var Mockery\MockInterface
+     */
     protected $cashbackTrackingFactory;
 
+    /**
+     * @var Mockery\MockInterface
+     */
     protected $cashbackTrackingRepository;
 
+    /**
+     * @var SaveCashbackTrackingEntityObserver
+     */
     protected $saveCashbackTrackingEntityObserver;
 
+    /**
+     * @var Mockery\MockInterface
+     */
     protected $eventObserver;
 
     protected function setUp()
@@ -159,5 +171,4 @@ class SaveCashbackTrackingEntityObserverTest extends TestCase
         $actualResult = $this->saveCashbackTrackingEntityObserver->execute($this->eventObserver);
         $this->assertSame($this->saveCashbackTrackingEntityObserver, $actualResult);
     }
-
 }

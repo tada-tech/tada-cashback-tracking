@@ -8,7 +8,6 @@ use Tada\CashbackTracking\Api\Data\CashbackTrackingInterface;
 
 class CashbackTracking extends AbstractDb
 {
-
     /**
      * @inheridoc
      */

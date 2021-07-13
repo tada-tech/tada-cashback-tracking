@@ -10,7 +10,6 @@ use Tada\CashbackTracking\Api\Data\CashbackTrackingExtensionInterface;
 
 class CashbackTracking extends AbstractExtensibleModel implements CashbackTrackingInterface
 {
-
     /**
      * Prefix of model events names
      *
@@ -43,30 +42,52 @@ class CashbackTracking extends AbstractExtensibleModel implements CashbackTracki
         $this->setData(self::ENTITY_ID, $value);
     }
 
+    /**
+     * @return int
+     */
     public function getOrderId()
     {
         return $this->getData(self::ORDER_ID);
     }
 
+    /**
+     * @param int $orderId
+     * @return $this
+     */
     public function setOrderId(int $orderId)
     {
         $this->setData(self::ORDER_ID, $orderId);
     }
+
+    /**
+     * @return string
+     */
     public function getPartner(): string
     {
         return $this->getData(self::PARTNER);
     }
 
+    /**
+     * @param string $partner
+     * @return $this
+     */
     public function setPartner(string $partner)
     {
         $this->setData(self::PARTNER, $partner);
     }
 
+    /**
+     * @return string
+     */
     public function getPartnerParameter(): string
     {
         return $this->getData(self::PARTNER_PARAMETER);
     }
 
+    /**
+     * @param string $partnerParameter
+     * @return $this
+     */
     public function setPartnerParameter(string $partnerParameter)
     {
         $this->setData(self::PARTNER_PARAMETER, $partnerParameter);

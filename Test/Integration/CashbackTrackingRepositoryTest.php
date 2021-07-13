@@ -16,7 +16,6 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 
 class CashbackTrackingRepositoryTest extends TestCase
 {
-
     /**
      * @var CartManagementInterface
      */

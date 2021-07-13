@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace Tada\CashbackTracking\Observer;
 
 use Magento\Framework\Event\Observer;
@@ -9,7 +10,6 @@ use Tada\CashbackTracking\Api\Data\CashbackTrackingInterface;
 
 class DataAssignObserver extends AbstractDataAssignObserver
 {
-
     /**
      * @var array
      */

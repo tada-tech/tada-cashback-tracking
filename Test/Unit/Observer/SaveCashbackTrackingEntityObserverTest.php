@@ -16,7 +16,6 @@ use Magento\Sales\Model\Order;
 
 class SaveCashbackTrackingEntityObserverTest extends TestCase
 {
-
     /**
      * @var Mockery\MockInterface
      */

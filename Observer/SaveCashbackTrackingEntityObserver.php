@@ -51,20 +51,23 @@ class SaveCashbackTrackingEntityObserver implements ObserverInterface
         $order = $observer->getEvent()->getData('order');
         $additionalInformation = $order->getPayment()->getAdditionalInformation();
 
-        try {
-            //Save CashbackTrackingEntity
-            /** @var CashbackTracking $exitedCashbackEntity */
-            $cashbackEntity = $this->cashbackTrackingRepository->getByOrderId((int)$order->getEntityId());
-        } catch (NoSuchEntityException $exception) {
-            /** @var CashbackTracking $cashbackEntity */
-            $cashbackEntity = $this->cashbackTrackingFactory->create();
-            $cashbackEntity->setOrderId((int)$order->getEntityId());
+        if (isset($additionalInformation[CashbackTrackingInterface::PARTNER])
+            && isset($additionalInformation[CashbackTrackingInterface::PARTNER_PARAMETER])
+        ) {
+            try {
+                //Save CashbackTrackingEntity
+                /** @var CashbackTracking $exitedCashbackEntity */
+                $cashbackEntity = $this->cashbackTrackingRepository->getByOrderId((int)$order->getEntityId());
+            } catch (NoSuchEntityException $exception) {
+                /** @var CashbackTracking $cashbackEntity */
+                $cashbackEntity = $this->cashbackTrackingFactory->create();
+                $cashbackEntity->setOrderId((int)$order->getEntityId());
+            }
+
+            $cashbackEntity->setPartner($additionalInformation[CashbackTrackingInterface::PARTNER]);
+            $cashbackEntity->setPartnerParameter($additionalInformation[CashbackTrackingInterface::PARTNER_PARAMETER]);
+            $this->cashbackTrackingRepository->save($cashbackEntity);
         }
-
-        $cashbackEntity->setPartner($additionalInformation[CashbackTrackingInterface::PARTNER]);
-        $cashbackEntity->setPartnerParameter($additionalInformation[CashbackTrackingInterface::PARTNER_PARAMETER]);
-        $this->cashbackTrackingRepository->save($cashbackEntity);
-
         return $this;
     }
 }

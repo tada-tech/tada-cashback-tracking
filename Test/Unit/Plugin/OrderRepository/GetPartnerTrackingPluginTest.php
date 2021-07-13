@@ -13,7 +13,6 @@ use Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface;
 
 class GetPartnerTrackingPluginTest extends TestCase
 {
-
     /**
      * @var Mockery\MockInterface
      */

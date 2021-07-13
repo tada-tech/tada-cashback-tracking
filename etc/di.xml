@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Tada\CashbackTracking\Api\Data\CashbackTrackingInterface"
+                type="Tada\CashbackTracking\Model\CashbackTracking" />
+    <preference for="Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface"
+                type="Tada\CashbackTracking\Model\CashbackTrackingRepository" />
+    <preference for="Tada\CashbackTracking\Api\Data\CashbackTrackingSearchResultInterface"
+                type="Magento\Framework\Api\SearchResultsInterface" />
+
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="load_partner_tracking_after_get_order"
+                type="Tada\CashbackTracking\Model\Plugin\OrderRepository\GetPartnerTrackingPlugin"/>
+    </type>
+</config>

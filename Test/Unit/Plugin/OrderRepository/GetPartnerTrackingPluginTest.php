@@ -8,7 +8,7 @@ use Magento\Sales\Api\Data\OrderExtensionFactory;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Tada\CashbackTracking\Model\CashbackTracking;
-use Tada\CashbackTracking\Model\Plugin\OrderRepository\GetPartnerTrackingPlugin;
+use Tada\CashbackTracking\Plugin\OrderRepository\GetPartnerTrackingPlugin;
 use Tada\CashbackTracking\Api\CashbackTrackingRepositoryInterface;
 
 class GetPartnerTrackingPluginTest extends TestCase

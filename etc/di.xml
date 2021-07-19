@@ -10,6 +10,6 @@
 
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="load_partner_tracking_after_get_order"
-                type="Tada\CashbackTracking\Model\Plugin\OrderRepository\GetPartnerTrackingPlugin"/>
+                type="Tada\CashbackTracking\Plugin\OrderRepository\GetPartnerTrackingPlugin"/>
     </type>
 </config>

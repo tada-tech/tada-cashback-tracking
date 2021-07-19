@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tada\CashbackTracking\Model\Plugin\OrderRepository;
+namespace Tada\CashbackTracking\Plugin\OrderRepository;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 

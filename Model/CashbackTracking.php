@@ -111,6 +111,6 @@ class CashbackTracking extends AbstractExtensibleModel implements CashbackTracki
      */
     public function setExtensionAttributes(CashbackTrackingExtensionInterface $extensionAttributes)
     {
-        return $this->setExtensionAttributes($extensionAttributes);
+        return $this->_setExtensionAttributes($extensionAttributes);
     }
 }

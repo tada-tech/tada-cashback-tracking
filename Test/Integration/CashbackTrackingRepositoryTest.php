@@ -59,6 +59,7 @@ class CashbackTrackingRepositoryTest extends TestCase
     /**
      * @magentoDataFixture Magento/Sales/_files/quote.php
      * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
      */
     public function testGetCashbackTrackingEntity()
     {
@@ -76,6 +77,7 @@ class CashbackTrackingRepositoryTest extends TestCase
     /**
      * @magentoDataFixture Magento/Sales/_files/quote.php
      * @magentoAppIsolation enabled
+     * @magentoDbIsolation enabled
      */
     public function testGetOrderWithPartnerTrackingExtensionAttribute()
     {
